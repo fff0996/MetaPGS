@@ -118,14 +118,14 @@ df <- get(paste("relPGS",j,"v2",sep=""))
 releval <- left_join(releval,df,by="eid")
 }
 df <- get(paste(i,"ElasticnetResult",sep=""))
-dd <- df[df$risk.factor != "(Intercept)" & df$risk.factor != "sex" & df$risk.factor != "age" & 
+#dd <- df[df$risk.factor != "(Intercept)" & df$risk.factor != "sex" & df$risk.factor != "age" & 
          df$risk.factor != "array" & df$risk.factor != "pc1" & df$risk.factor != "pc2" & 
          df$risk.factor != "pc3" & df$risk.factor != "pc4" & df$risk.factor != "pc5" 
          & df$risk.factor != "pc6" & df$risk.factor != "pc7" & df$risk.factor != "pc8" 
          & df$risk.factor != "pc9" & df$risk.factor != "pc10",]
 Incp <- 0
-#Incp <- df[df$risk.factor == "(Intercept)","opt_lambda"]
-#dd <- df[!df$risk.factor == "(Intercept)",]
+Incp <- df[df$risk.factor == "(Intercept)","opt_lambda"]
+dd <- df[!df$risk.factor == "(Intercept)",]
 optrf <- dd$risk.factor
 optlambda <- dd$opt_lambda
 tmp <- gsub("st_PGS","st_relPGS",optrf)
