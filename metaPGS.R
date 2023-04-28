@@ -78,6 +78,7 @@ unrmodel[is.na(unrmodel$case),]$case <- 0
 
 #perform Elasticnet logistic regression
 train <- unrmodel[,c(-1,-2,-3)]
+train <- train[,c(14:length(names(train)))]
 train.x <- scale(train[,-length(names(train))])
 train.y <- train[,length(names(train))]
 Elasticnet_model <- glmnet(train.x, train.y, alpha=0.5)
