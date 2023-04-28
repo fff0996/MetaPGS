@@ -7,7 +7,8 @@ disease <- assoc$ICD10
 dd <- unique(disease)
 disease <- dd
 
-#get risk factors with a single disease unrelatedsample
+
+#get risk factors with a single disease for unrelatedsample
 tmp <- c()
 for ( i in disease){
 df <- assoc[assoc$ICD10 == i,]
@@ -21,7 +22,7 @@ df <- unrelated_root[,c(1,2,18,3,4,6:16)]
 unrelated_root <- df
 
 
-#calling all selected risk factors PGS
+#calling all selected risk factors PGS for unrelatedsample
 riskfactor <- assoc$Pheno
 riskfactor <- unique(riskfactor)
 #115 risk factor in unrelatedsample
