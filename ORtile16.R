@@ -22,8 +22,8 @@ df <- rbind(ref,tmp)
 df$marker <- ifelse(df$BTPGStile4 == 1 & df$metaPGStile4 == 1,0,1)
 beta <- summary(glm(as.factor(case) ~ as.factor(marker),data=df,family=binomial))$coef["as.factor(marker)1",1]
 Pvalue <- summary(glm(as.factor(case) ~ as.factor(marker),data=df,family=binomial))$coef["as.factor(marker)1",4]
-print(paste("Beta: ",beta," OR: ",exp(beta)," Pvalue: ",Pvalue,sep=""))
-}
+print(paste(j,",",i,":","Beta: ",beta," OR: ",exp(beta)," Pvalue: ",Pvalue,sep=""))
+}}
 else{
 for ( j in 1:4){
 tmp <- merge[merge$BTPGStile4 == j & merge$metaPGStile4 == i,]
@@ -31,7 +31,7 @@ df <- rbind(ref,tmp)
 df$marker <- ifelse(df$BTPGStile4 == 1 & df$metaPGStile4 ==1,0,1)
 beta <- summary(glm(as.factor(case) ~ as.factor(marker),data=df,family=binomial))$coef["as.factor(marker)1",1] 
 Pvalue <- summary(glm(as.factor(case) ~ as.factor(marker),data=df,family=binomial))$coef["as.factor(marker)1",4]
-print(paste("Beta: ",beta," OR: ",exp(beta)," Pvalue: ",Pvalue,sep=""))
+print(paste(j,",",i,":","Beta: ",beta," OR: ",exp(beta)," Pvalue: ",Pvalue,sep=""))
 }
 }
 }
