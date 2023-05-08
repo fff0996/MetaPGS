@@ -146,6 +146,7 @@ allse <- summary(glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=bin
 allPvalue <- summary(glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=binomial))$coef["scale(metaPGS)",4]
 relevalopt <- relevalopt %>% mutate(tile100 = ntile(metaPGS,100))
 write.table(relevalopt,paste("./",i,"metaPGS.txt",sep=""),sep="\t",quote=F,row.names=F)
+ #library(fmsb)
 nkr <- NagelkerkeR2(mod)$R2
 g3 <- relevalopt[relevalopt$tile100 > 97,]
 g3["marker"] <- 1
