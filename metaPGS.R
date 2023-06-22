@@ -67,6 +67,19 @@ tmp <-  tmp[,c(1,3)]
  assign(paste("PGS",i,"v2",sep=""),tmp)
  }
 
+#paste a single disease case/control
+for( i in disease){
+if( i %in% commonDisease){
+assign(paste(i,"case",sep=""),read.csv(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/66_ICD10/22_extract_ICD10_sample_QC/",i,"/case.txt",sep=""),sep="\t"))
+df <- get(paste(i,"case",sep=""))
+df$case <- 1
+}else{
+assign(paste(i,"case",sep=""),read.csv(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/66_ICD10/22_extract_ICD10_sample_QC/",i,sep=""),sep="\t",header=F))
+df <- get(paste(i,"case",sep=""))
+names(df)[1] <- c("eid")
+df$case <- 1
+}
+}
 
 
 #################Elasticnet############################
@@ -79,12 +92,7 @@ for ( j in get(paste(i,"rf",sep=""))){
 df <- get(paste("PGS",j,"v2",sep=""))
 unrmodel <- left_join(unrmodel,df,by="FID")
 }
-#paste a single disease case/control
-if( i %in% cd){
-assign(paste(i,"case",sep=""),read.csv(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/66_ICD10/22_extract_ICD10_sample_QC/",i,"/case.txt",sep=""),sep="\t"))
-}else{
-assign(paste(i,"case",sep=""),read.csv(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/66_ICD10/22_extract_ICD10_sample_QC/",i,sep=""),sep="\t",header=F))
-}
+
 df <- get(paste(i,"case",sep=""))
 if( length(colnames(df)) > 1){
 df <- df[,c(1)]
