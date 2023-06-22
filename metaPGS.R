@@ -1,5 +1,9 @@
 library(dplyr)
 library(glmnet)
+#########################setting###############################
+
+
+
 
 #get association
 assoc <- read.csv("asso.txt",sep="\t")
@@ -48,6 +52,32 @@ df <- df[,c(1,3)]
 assign(paste("PGS",i,"v2",sep=""),df)
 }
 
+#get Binary Trait(BT;Disease) PGS in unrelatedsample(170,000)
+for ( i in disease){
+ assign(paste("PGS",i,sep=""),read.csv(pastae("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_44_GWAS_BT_in_GWASset/outcome_GPS_GPSset/",i,sep="")))
+}
+for ( i in disease){
+ tmp <- get(paste("PGS",i,sep=""))
+ tmp <- tmp[,c("FID","pred_inf")]
+ names(tmp)[2] <- c(paste("PGS",i,sep=""))
+ assign(paste("PGS",i,"v2",sep=""),tmp)
+ }
+for ( i in disease){
+ tmp <- get(paste("PGS",i,"v2",sep=""))
+ sc  <- scale(tmp[[2]])
+ nm <- c(paste("st_PGS",i,sep=""))
+ tmp[nm] <- sc
+ assign(paste("PGS",i,"v2",sep=""),tmp)
+ }
+for ( i in disease){
+ df <- get(paste("PGS",i,"v2",sep=""))
+ df <- df[,c(1,3)]
+ assign(paste("PGS",i,"v2",sep=""),df)
+ }
+
+
+
+#################Elasticnet############################
 for ( i in disease){
 #i <- disease[i]
 #paste a single disease case 
