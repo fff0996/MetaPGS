@@ -60,19 +60,11 @@ for ( i in disease){
  tmp <- get(paste("PGS",i,sep=""))
  tmp <- tmp[,c("FID","pred_inf")]
  names(tmp)[2] <- c(paste("PGS",i,sep=""))
- assign(paste("PGS",i,"v2",sep=""),tmp)
- }
-for ( i in disease){
- tmp <- get(paste("PGS",i,"v2",sep=""))
  sc  <- scale(tmp[[2]])
  nm <- c(paste("st_PGS",i,sep=""))
  tmp[nm] <- sc
+tmp <-  tmp[,c(1,3)]
  assign(paste("PGS",i,"v2",sep=""),tmp)
- }
-for ( i in disease){
- df <- get(paste("PGS",i,"v2",sep=""))
- df <- df[,c(1,3)]
- assign(paste("PGS",i,"v2",sep=""),df)
  }
 
 
