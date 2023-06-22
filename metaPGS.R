@@ -73,11 +73,15 @@ if( i %in% commonDisease){
 assign(paste(i,"case",sep=""),read.csv(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/66_ICD10/22_extract_ICD10_sample_QC/",i,"/case.txt",sep=""),sep="\t"))
 df <- get(paste(i,"case",sep=""))
 df$case <- 1
+df <- df[,c("eid","case")]
+assign(paste(i,"case",sep=""),df)
 }else{
 assign(paste(i,"case",sep=""),read.csv(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/66_ICD10/22_extract_ICD10_sample_QC/",i,sep=""),sep="\t",header=F))
 df <- get(paste(i,"case",sep=""))
 names(df)[1] <- c("eid")
 df$case <- 1
+df <- df[,c("eid","case")]
+assign(paste(i,"case",sep=""),df)
 }
 }
 
