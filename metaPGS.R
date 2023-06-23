@@ -88,8 +88,6 @@ assign(paste(i,"case",sep=""),df)
 
 #################Elasticnet############################
 for ( i in disease){
-
-
 unrmodel <- unrelated_root
 
 for ( j in get(paste(i,"rf",sep=""))){
@@ -125,70 +123,8 @@ optrf <- tmp
 #save elasticnet logistic regression result
 assign(paste(i,"ElasticnetResult",sep=""),data.frame(risk.factor=optrf,opt_lambda=Elasticnet_coef@x))
 df <- get(paste(i,"ElasticnetResult",sep=""))
-write.table(df,paste(",i,"Result.txt",sep=""),sep="\t",quote=F,row.names=F)
+write.table(df,paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/QTBT/",i,"Result.txt",sep=""),sep="\t",quote=F,row.names=F)
+
 }
-#For calculate metaPGS, call 50,000samples 
-rel_root <- read.csv("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase2_11_related_sample/00_keep/11_related_sample_final.csv")
-releval <- rel_root[,c(1,8)]
-cov <- read.csv("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase2_11_related_sample/00_keep/ALL_cov.txt",sep="\t")
-releval <- left_join(releval,cov,by="eid")
-releval <- releval[,c(1:4,6:15,18)]
-names(releval)[length(names(releval))] <- c("array")
-df <- get(paste(i,"case",sep=""))
-releval <- left_join(releval,df,by="eid")
-releval[is.na(releval$case),]$case <- 0
 
-#paste elasticnet optlambda risk factor PGS in 50,000 samples to the single disease
-for ( j in get(paste(i,"rf",sep=""))){
-df <- get(paste("relPGS",j,"v2",sep=""))
-releval <- left_join(releval,df,by="eid")
-}
-df <- get(paste(i,"ElasticnetResult",sep=""))
-#dd <- df[df$risk.factor != "(Intercept)" & df$risk.factor != "sex" & df$risk.factor != "age" & 
- #        df$risk.factor != "array" & df$risk.factor != "pc1" & df$risk.factor != "pc2" & 
-  #       df$risk.factor != "pc3" & df$risk.factor != "pc4" & df$risk.factor != "pc5" 
-  #       & df$risk.factor != "pc6" & df$risk.factor != "pc7" & df$risk.factor != "pc8" 
-  #       & df$risk.factor != "pc9" & df$risk.factor != "pc10",]
-Incp <- 0
-Incp <- df[df$risk.factor == "(Intercept)","opt_lambda"]
-dd <- df[!df$risk.factor == "(Intercept)",]
-optrf <- dd$risk.factor
-optlambda <- dd$opt_lambda
-tmp <- gsub("st_PGS","st_relPGS",optrf)
 
-#calculate metaPGS excluding covariated
-relevalopt <- releval[,c(tmp,"case","eid","FID")]
-coln <- names(relevalopt)
-dd$risk.factor <- tmp
-for ( j in tmp){
-p <- which(j == coln)
-Incp <- Incp + (( dd[dd$risk.factor == j,]$opt_lambda) * relevalopt[[p]])
-}
-relevalopt["metaPGS"] <- Incp
-
-mod <- glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=binomial)
-allbeta <- summary(glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=binomial))$coef["scale(metaPGS)",1]
-allse <- summary(glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=binomial))$coef["scale(metaPGS)",2]
-allPvalue <- summary(glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=binomial))$coef["scale(metaPGS)",4]
-relevalopt <- relevalopt %>% mutate(tile100 = ntile(metaPGS,100))
-write.table(relevalopt,paste("./",i,"metaPGS.txt",sep=""),sep="\t",quote=F,row.names=F)
- #library(fmsb)
-nkr <- NagelkerkeR2(mod)$R2
-g3 <- relevalopt[relevalopt$tile100 > 97,]
-g3["marker"] <- 1
-g4060 <- relevalopt[relevalopt$tile100 > 40,]
-g4060 <- g4060[g4060$tile100 < 61,]
-g4060["marker"] <- 0
-merge <- rbind(g3,g4060)
-allbeta <- summary(glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=binomial))$coef["scale(metaPGS)",1]
-allse <- summary(glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=binomial))$coef["scale(metaPGS)",2]
-allPvalue <- summary(glm(as.factor(case) ~ scale(metaPGS),data=relevalopt,family=binomial))$coef["scale(metaPGS)",4]
-
-HRbeta <- summary(glm(as.factor(case) ~ as.factor(marker),data=merge,family=binomial))$coef["as.factor(marker)1",1]
-HRse <- summary(glm(as.factor(case) ~ as.factor(marker),data=merge,family=binomial))$coef["as.factor(marker)1",2]
-HRPvalue <- summary(glm(as.factor(case) ~ as.factor(marker),data=merge,family=binomial))$coef["as.factor(marker)1",4]
-
-cat(i,"metaPGSallOR:",exp(allbeta)," ",i,"metaPGSallbeta:",allbeta," ",i,"metaPGSallse:",allse," ",i,"metaPGSallPvalue:",allPvalue,"\n",file="./output.txt",append=T)
-cat(i,"metaPGSallNagelkerkeR2:",nkr,"\n",file="./output.txt",append=T)
-cat(i,"metaPGSHROR:",exp(HRbeta)," ",i,"metaPGSHRbeta:",HRbeta," ",i,"metaPGSHRse:",HRse," ",i,"metaPGSHRPvalue:",HRPvalue,"\n",file="./output.txt",append=T)
-}
