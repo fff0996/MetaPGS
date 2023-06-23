@@ -54,7 +54,7 @@ assign(paste("PGS",i,"v2",sep=""),df)
 
 #get Binary Trait(BT;Disease) PGS in unrelatedsample(170,000)
 for ( i in disease){
- assign(paste("PGS",i,sep=""),read.csv(pastae("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_44_GWAS_BT_in_GWASset/outcome_GPS_GPSset/",i,sep="")))
+ assign(paste("PGS",i,sep=""),read.csv(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_44_GWAS_BT_in_GWASset/outcome_GPS_GPSset/",i,sep="")))
 }
 for ( i in disease){
  tmp <- get(paste("PGS",i,sep=""))
@@ -88,26 +88,18 @@ assign(paste(i,"case",sep=""),df)
 
 #################Elasticnet############################
 for ( i in disease){
-#i <- disease[i]
-#paste a single disease case 
+
+
 unrmodel <- unrelated_root
 
 for ( j in get(paste(i,"rf",sep=""))){
 df <- get(paste("PGS",j,"v2",sep=""))
 unrmodel <- left_join(unrmodel,df,by="FID")
 }
-
+df <- get(paste("PGS",i,"v2",sep=""))
+unrmodel <- unrmodel(unrmodel,df,by="FID")
 df <- get(paste(i,"case",sep=""))
-if( length(colnames(df)) > 1){
-df <- df[,c(1)]
-df <- data.frame(df)
-names(df)[1] <- c("eid")
-assign(paste(i,"case",sep=""),df)
-}
-names(df)[1] <- c("eid")
-df["case"] <- 1
-unrmodel <- left_join(unrmodel,df,by="eid")
-assign(paste(i,"case",sep=""),df)
+unrmodel <- unrmodel(unrmodel,df,by="eid")
 unrmodel[is.na(unrmodel$case),]$case <- 0
 
 #perform Elasticnet logistic regression
@@ -133,8 +125,8 @@ optrf <- tmp
 #save elasticnet logistic regression result
 assign(paste(i,"ElasticnetResult",sep=""),data.frame(risk.factor=optrf,opt_lambda=Elasticnet_coef@x))
 df <- get(paste(i,"ElasticnetResult",sep=""))
-write.table(df,paste("./",i,"Result.txt",sep=""),sep="\t",quote=F,row.names=F)
-
+write.table(df,paste(",i,"Result.txt",sep=""),sep="\t",quote=F,row.names=F)
+}
 #For calculate metaPGS, call 50,000samples 
 rel_root <- read.csv("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase2_11_related_sample/00_keep/11_related_sample_final.csv")
 releval <- rel_root[,c(1,8)]
