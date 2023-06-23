@@ -124,7 +124,44 @@ optrf <- tmp
 assign(paste(i,"ElasticnetResult",sep=""),data.frame(risk.factor=optrf,opt_lambda=Elasticnet_coef@x))
 df <- get(paste(i,"ElasticnetResult",sep=""))
 write.table(df,paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/QTBT/",i,"Result.txt",sep=""),sep="\t",quote=F,row.names=F)
-
 }
+
+
+#########QTmetaPGS,QTBTmetaPGS,BTPGS merge############################
+for ( d in sigdisease){
+v1 <- read.table(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/perSNPscore/QTSNPweight/",d,"/",d,".v1.profile",sep=""),header=T)
+v2 <- read.table(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/perSNPscore/QTBTSNPweight/",d,"/",d,".v2.profile",sep=""),header=T)
+bt <- read.csv(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_44_GWAS_BT_in_GWASset/outcome_GPS_Repset/",d,sep=""))
+
+v1 <- v1[,c("FID","SCORESUM")]
+v2 <- v2[,c("FID","SCORESUM")]
+bt <- bt[,c("FID","pred_inf")]
+
+names(v1)[2] <- c("QTmetaPGS")
+names(v2)[2] <- c("QTBTmetaPGS")
+names(bt)[2] <- c("BTPGS")
+
+merge <- left_join(v1,v2,by="FID")
+merge <- left_join(merge,bt,by="FID")
+
+merge <- left_join(merge,id,by="FID")
+merge <- left_join(merge,cov,by="eid")
+df <- get(paste(d,"case",sep=""))
+merge <- left_join(merge,df,by="eid")
+merge[is.na(merge$case),]$case <- 0
+if(!dir.exists(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/perSNPscore/diseaseResult/",d,sep=""))){
+ dir.create(paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/perSNPscore/diseaseResult/",d,sep=""))
+}
+write.table(merge,paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/perSNPscore/diseaseResult/",d,"/",d,".merge.txt",sep=""),sep="\t",quote=F,row.names=F)
+ }
+ 
+
+
+
+
+
+
+
+
 
 
