@@ -125,6 +125,94 @@ assign(paste(i,"ElasticnetResult",sep=""),data.frame(risk.factor=optrf,opt_lambd
 df <- get(paste(i,"ElasticnetResult",sep=""))
 write.table(df,paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/QTBT/",i,"Result.txt",sep=""),sep="\t",quote=F,row.names=F)
 }
+###########Consctruction of QTmetPRS,QTBTmetaPRS####################
+#QTmetaPRS
+for ( d in sigdisease){
+assign(paste("X",d,"Result.v1",sep=""),read.csv(paste("./QT/",d,"Result.txt",sep=""),sep="\t"))
+df <- get(paste("X",d,"Result.v1",sep=""))
+resultrf <- df$risk.factor
+ind <- grep("st_PGS",resultrf)
+resultrf <- resultrf[ind]
+resultrf <- gsub("st_PGS","",resultrf)
+
+reweight <- info_snp[,c(5,3)]
+for ( i in resultrf){
+df <- get(paste("X",i,".beta.inf",sep=""))
+df <- df[,c(5,12)]
+weight <- get(paste("X",d,"Result.v1",sep=""))
+str <- c(paste("st_PGS",i,sep=""))
+w <- weight[weight$risk.factor == str,]$opt_lambda
+r <- SD[SD$riskfactor ==i,]$PGSsetSD
+df$reweight <- df$beta_inf * (w/r)
+df <- df[,c(1,3)]
+names(df)[2] <- c(paste("X",i,".reweight.beta.inf",sep=""))
+reweight <- left_join(reweight,df,by="rsid")
+}
+
+for ( i in 3:length(names(reweight))){
+if(i == 3){
+reweight$sum <- reweight[[i]]
+}
+else{
+reweight$sum <- reweight$sum + reweight[[i]]
+}
+}
+
+input <- reweight[,c("rsid","a0","sum")]
+names(input) <- c("rsID","effect_allele","effect_weight")
+
+if(!dir.exists(paste("./perSNPscore/QTSNPweight/",d,"/",sep=""))){
+dir.create(paste("./perSNPscore/QTSNPweight/",d,"/",sep=""))
+}
+write.table(input,paste("./perSNPscore/QTSNPweight/",d,"/",d,".v1.txt",sep=""),sep="\t",quote=F,row.names=F)
+
+
+}
+
+
+
+#QTBTmetaPGS
+for ( d in sigdisease){
+
+
+assign(paste("X",d,"Result.v2",sep=""),read.csv(paste("./QTBT/",d,"Result.v2.txt",sep=""),sep="\t"))
+df <- get(paste("X",d,"Result.v2",sep=""))
+resultrf <- df$risk.factor
+ind <- grep("st_PGS",resultrf)
+resultrf <- resultrf[ind]
+resultrf <- gsub("st_PGS","",resultrf)
+
+reweight <- info_snp[,c(5,3)]
+for ( i in resultrf){
+df <- get(paste("X",i,".beta.inf",sep=""))
+df <- df[,c(5,12)]
+weight <- get(paste("X",d,"Result.v2",sep=""))
+str <- c(paste("st_PGS",i,sep=""))
+w <- weight[weight$risk.factor == str,]$opt_lambda
+r <- SD[SD$riskfactor ==i,]$PGSsetSD
+df$reweight <- df$beta_inf * (w/r)
+df <- df[,c(1,3)]
+names(df)[2] <- c(paste("X",i,".reweight.beta.inf",sep=""))
+reweight <- left_join(reweight,df,by="rsid")
+}
+
+for ( i in 3:length(names(reweight))){
+if(i == 3){
+reweight$sum <- reweight[[i]]
+}
+else{
+reweight$sum <- reweight$sum + reweight[[i]]
+}
+}
+
+input <- reweight[,c("rsid","a0","sum")]
+names(input) <- c("rsID","effect_allele","effect_weight")
+if(!dir.exists(paste("./perSNPscore/QTBTSNPweight/",d,"/",sep=""))){
+dir.create(paste("./perSNPscore/QTBTSNPweight/",d,"/",sep=""))
+}
+write.table(input,paste("./perSNPscore/QTBTSNPweight/",d,"/",d,".v2.txt",sep=""),sep="\t",quote=F,row.names=F)
+
+}
 
 
 #########QTmetaPGS,QTBTmetaPGS,BTPGS merge############################
