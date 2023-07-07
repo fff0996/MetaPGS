@@ -125,6 +125,8 @@ assign(paste(i,"ElasticnetResult",sep=""),data.frame(risk.factor=optrf,opt_lambd
 df <- get(paste(i,"ElasticnetResult",sep=""))
 write.table(df,paste("/BiO/Hyein/90Traits/BT/QT_BT/2nd_validation_GWAS/phase3_33_Elasticnet/QTBT/",i,"Result.txt",sep=""),sep="\t",quote=F,row.names=F)
 }
+
+
 ###########Consctruction of QTmetPRS,QTBTmetaPRS####################
 #QTmetaPRS
 for ( d in sigdisease){
@@ -165,16 +167,12 @@ if(!dir.exists(paste("./perSNPscore/QTSNPweight/",d,"/",sep=""))){
 dir.create(paste("./perSNPscore/QTSNPweight/",d,"/",sep=""))
 }
 write.table(input,paste("./perSNPscore/QTSNPweight/",d,"/",d,".v1.txt",sep=""),sep="\t",quote=F,row.names=F)
-
-
 }
 
 
 
 #QTBTmetaPGS
 for ( d in sigdisease){
-
-
 assign(paste("X",d,"Result.v2",sep=""),read.csv(paste("./QTBT/",d,"Result.v2.txt",sep=""),sep="\t"))
 df <- get(paste("X",d,"Result.v2",sep=""))
 resultrf <- df$risk.factor
@@ -211,7 +209,6 @@ if(!dir.exists(paste("./perSNPscore/QTBTSNPweight/",d,"/",sep=""))){
 dir.create(paste("./perSNPscore/QTBTSNPweight/",d,"/",sep=""))
 }
 write.table(input,paste("./perSNPscore/QTBTSNPweight/",d,"/",d,".v2.txt",sep=""),sep="\t",quote=F,row.names=F)
-
 }
 
 
